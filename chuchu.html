@@ -2,86 +2,77 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<title>Test Letters</title>
+<title>Dot Matrix Text</title>
 <style>
 body{
   margin:0;
-  overflow:hidden;
   background:black;
-  font-family:monospace;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  overflow:hidden;
 }
-.letter{
-  position:fixed;
-  pointer-events:none;
-  color:#00ff88;
-  font-size:20px;
+
+.grid{
+  display:grid;
+  grid-template-columns: repeat(120, 10px);
+  gap:6px;
+}
+
+.pixel{
+  width:10px;
+  height:4px;
+  background:#111;
+  border-radius:2px;
+  transition:0.2s;
+}
+
+.pixel.on{
+  background:white;
 }
 </style>
 </head>
-
 <body>
 
+<div class="grid" id="grid"></div>
+
 <script>
-document.addEventListener("DOMContentLoaded", function(){
+const text = "404";
+const cols = 120;
+const rows = 40;
 
-const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-const total = 100;
-const mouse = {x:-9999, y:-9999};
+const canvas = document.createElement("canvas");
+const ctx = canvas.getContext("2d");
 
-document.addEventListener("mousemove", e=>{
-  mouse.x = e.clientX;
-  mouse.y = e.clientY;
-});
+canvas.width = cols;
+canvas.height = rows;
 
-for(let i=0;i<total;i++){
-  createLetter();
-}
+ctx.fillStyle = "black";
+ctx.fillRect(0,0,cols,rows);
 
-function createLetter(){
-  const el = document.createElement("span");
-  el.className = "letter";
-  el.textContent = letters[Math.floor(Math.random()*letters.length)];
+ctx.fillStyle = "white";
+ctx.font = "bold 30px Arial";
+ctx.textAlign = "center";
+ctx.textBaseline = "middle";
+ctx.fillText(text, cols/2, rows/2);
 
-  let x = Math.random()*window.innerWidth;
-  let y = Math.random()*window.innerHeight;
-  let vx = 0;
-  let vy = 0;
+const imageData = ctx.getImageData(0,0,cols,rows).data;
 
-  document.body.appendChild(el);
+const grid = document.getElementById("grid");
 
-  function animate(){
-    y += 0.5;
-
-    const dx = x - mouse.x;
-    const dy = y - mouse.y;
-    const dist = Math.sqrt(dx*dx + dy*dy);
-
-    if(dist < 100 && dist > 0){
-      const force = (100 - dist)/100;
-      vx += (dx/dist)*force*4;
-      vy += (dy/dist)*force*4;
+for(let y=0;y<rows;y++){
+  for(let x=0;x<cols;x++){
+    const index = (y*cols + x)*4;
+    const brightness = imageData[index]; 
+    const div = document.createElement("div");
+    div.className = "pixel";
+    if(brightness > 100){
+      div.classList.add("on");
     }
-
-    vx *= 0.95;
-    vy *= 0.95;
-
-    x += vx;
-    y += vy;
-
-    if(y > window.innerHeight){
-      y = -20;
-      x = Math.random()*window.innerWidth;
-    }
-
-    el.style.transform = `translate(${x}px, ${y}px)`;
-
-    requestAnimationFrame(animate);
+    grid.appendChild(div);
   }
-
-  animate();
 }
-
-});
 </script>
 
 </body>
