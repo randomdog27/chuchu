@@ -2,11 +2,19 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Dot Text</title>
+<title>Interactive Dot Text</title>
 <style>
   body{
     margin:0;
     background:black;
+    overflow:hidden;
+  }
+  .dot{
+    width:8px;
+    height:3px;
+    border-radius:2px;
+    background:#111;
+    transition: background 0.2s ease;
   }
 </style>
 </head>
@@ -16,6 +24,14 @@
 const text = "404";
 const cols = 180;
 const rows = 60;
+
+let mouseX = -1000;
+let mouseY = -1000;
+
+document.addEventListener("mousemove", e=>{
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+});
 
 const container = document.createElement("div");
 container.style.position = "fixed";
@@ -47,20 +63,46 @@ ctx.fillText(text, cols/2, rows/2);
 
 const imageData = ctx.getImageData(0,0,cols,rows).data;
 
+let dots = [];
+
 for(let y=0;y<rows;y++){
   for(let x=0;x<cols;x++){
     const index = (y*cols + x)*4;
     const brightness = imageData[index];
 
-    const pixel = document.createElement("div");
-    pixel.style.width = "8px";
-    pixel.style.height = "3px";
-    pixel.style.borderRadius = "2px";
-    pixel.style.background = brightness > 100 ? "white" : "#111";
+    const dot = document.createElement("div");
+    dot.className = "dot";
 
-    container.appendChild(pixel);
+    if(brightness > 100){
+      dot.style.background = "white";
+      dot.dataset.active = "1";
+    }
+
+    container.appendChild(dot);
+    dots.push(dot);
   }
 }
+
+function animate(){
+  dots.forEach(dot=>{
+    if(dot.dataset.active === "1"){
+      const rect = dot.getBoundingClientRect();
+      const dx = rect.left - mouseX;
+      const dy = rect.top - mouseY;
+      const distance = Math.sqrt(dx*dx + dy*dy);
+
+      if(distance < 80){
+        dot.style.background = "#00ffcc"; // màu khi hover gần
+      } else {
+        dot.style.background = "white";
+      }
+    }
+  });
+
+  requestAnimationFrame(animate);
+}
+
+animate();
 </script>
 
 </body>
