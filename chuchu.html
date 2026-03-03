@@ -1,4 +1,19 @@
-const text = "404";   // Đổi chữ ở đây
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Dot Text</title>
+<style>
+  body{
+    margin:0;
+    background:black;
+  }
+</style>
+</head>
+<body>
+
+<script>
+const text = "404";
 const cols = 180;
 const rows = 60;
 
@@ -11,7 +26,6 @@ container.style.height = "100vh";
 container.style.display = "grid";
 container.style.gridTemplateColumns = `repeat(${cols}, 8px)`;
 container.style.gap = "6px";
-container.style.background = "black";
 container.style.justifyContent = "center";
 container.style.alignContent = "center";
 document.body.appendChild(container);
@@ -47,3 +61,7 @@ for(let y=0;y<rows;y++){
     container.appendChild(pixel);
   }
 }
+</script>
+
+</body>
+</html>
